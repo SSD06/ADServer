@@ -56,6 +56,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if (tcpServer->isListening())
         tcpServer->close();//停止网络监听
     event->accept();
+    //event->ignore();
 }
 
 QString MainWindow::getLocalIP()
@@ -188,8 +189,9 @@ void MainWindow::onTextMessageReceived(QString data)
 
                     oldSocket->setProperty("FilePath",FilePath);
                     oldSocket->setProperty("FileStatus",true);
-                    ui->plainTextEdit->appendPlainText("正在发送的文件名:"+
-                                                       FileName+'.'+FileSuffix+"\n");
+//                    ui->plainTextEdit->appendPlainText("正在发送的文件名:"+
+//                                                       FileName+'.'+FileSuffix+"\n");
+                    onlog("正在发送的文件名:"+FileName+'.'+FileSuffix+"\n");
                     QJsonObject json;
                     json.insert("Type","OK");
                     //oldSocket->sendTextMessage(QJsonDocument(json).toJson());
@@ -200,8 +202,9 @@ void MainWindow::onTextMessageReceived(QString data)
                     auto FilePath=oldSocket->property("FilePath").toString();
                     auto FileSuffix=oldSocket->property("FileSuffix").toString();
                     QFile::rename(FilePath+".pf",FilePath+'.'+FileSuffix);
-                    ui->plainTextEdit->appendPlainText("文件存储路径为:"+
-                                                       FilePath+'.'+FileSuffix+"\n");
+//                    ui->plainTextEdit->appendPlainText("文件存储路径为:"+
+//                                                       FilePath+'.'+FileSuffix+"\n");
+                    onlog("文件存储路径为:"+FilePath+'.'+FileSuffix+"\n");
                     oldSocket->setProperty("FileName","");
                     oldSocket->setProperty("FileSuffix","");
                     oldSocket->setProperty("FilePath","");
@@ -275,6 +278,8 @@ void MainWindow::onDisconnected()
     tcpSocket.removeOne(oldSocket);
     //tcpSocket.erase(qFind(tcpSocket.begin(),tcpSocket.end(),oldSocket));
     oldSocket->deleteLater();
+    //delete  oldSocket;
+    qDebug()<<tcpSocket.size();
     //oldSocket.reset();
     //delete oldSocket;
     //qDebug()<<tcpSocket.size();
